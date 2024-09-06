@@ -11,11 +11,12 @@ import {
   SliderFilledTrack,
   SliderThumb,
   VStack,
+  HStack,
 } from "@chakra-ui/react"
 
 const Sidebar = () => {
   return (
-    <Box w="20%" p={4} borderWidth={1} borderRadius="md">
+    <Box w="25%" p={4} borderWidth={1} borderRadius="md">
       <VStack align="start" spacing={4}>
         <Heading size="md">Модель сегментации</Heading>
         <RadioGroup defaultValue="1">
@@ -28,7 +29,7 @@ const Sidebar = () => {
             </Radio>
           </VStack>
         </RadioGroup>
-        <Text>Порог</Text>
+        <Text>Порог классификации</Text>
         <Slider defaultValue={0.5} min={0} max={1} step={0.1}>
           <SliderTrack>
             <SliderFilledTrack />
@@ -57,8 +58,10 @@ const Sidebar = () => {
           </SliderTrack>
           <SliderThumb />
         </Slider>
-        <Button colorScheme="blue">Обновить</Button>
-        <Button>Обновить для всех</Button>
+        <HStack>
+          <Button colorScheme="blue">Обновить</Button>
+          <Button>Обновить все</Button>
+        </HStack>
       </VStack>
     </Box>
   )

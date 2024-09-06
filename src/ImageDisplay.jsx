@@ -1,21 +1,28 @@
 import React from "react"
 import {
-    Box,
-    RadioGroup,
-    Radio,
-    Slider,
-    SliderTrack,
-    SliderFilledTrack,
-    SliderThumb,
-    Image,
-    HStack,
-  } from '@chakra-ui/react';
+  Flex,
+  Button,
+  RadioGroup,
+  Radio,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Image,
+  HStack,
+  Text
+} from "@chakra-ui/react"
+import ImageTemplate from "./assets/cells.png"
 
 const ImageDisplay = () => {
   return (
-    <Box w="60%" p={4}>
-      <Image src="image_placeholder.png" alt="Image" />
-      <HStack justify="center" mt={4}>
+    <Flex w="50%" direction="column" align="center" gap={4}>
+      <HStack>
+        <Button size="sm">Назад</Button>
+        <Text>1 из 20</Text>
+        <Button size="sm">Далее</Button>
+      </HStack>
+      <HStack justify="center" w="100%">
         <RadioGroup defaultValue="1">
           <HStack spacing={4}>
             <Radio value="1">Без маски</Radio>
@@ -23,14 +30,15 @@ const ImageDisplay = () => {
             <Radio value="3">Наложить маску</Radio>
           </HStack>
         </RadioGroup>
-        <Slider defaultValue={0.5} min={0} max={1} step={0.1} w="40%">
+        <Slider defaultValue={0.5} min={0} max={1} step={0.1} w="20%">
           <SliderTrack>
             <SliderFilledTrack />
           </SliderTrack>
           <SliderThumb />
         </Slider>
       </HStack>
-    </Box>
+      <Image w="500px" src={ImageTemplate} alt="Image" />
+    </Flex>
   )
 }
 

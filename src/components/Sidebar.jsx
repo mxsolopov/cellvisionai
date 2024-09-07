@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import {
   Box,
   Heading,
@@ -21,9 +22,9 @@ const Sidebar = () => {
         <Heading size="md">Модель сегментации</Heading>
         <RadioGroup defaultValue="1">
           <VStack align="start">
-            <Radio value="1">DeepLab</Radio>
-            <Radio value="2">SegNet</Radio>
-            <Radio value="3">U-Net</Radio>
+            <Radio value="1">U-Net</Radio>
+            <Radio value="2">DeepLab</Radio>
+            <Radio value="3">SegNet</Radio>
             <Radio value="4" isDisabled>
               Cellpose (скоро!)
             </Radio>

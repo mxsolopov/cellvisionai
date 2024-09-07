@@ -1,5 +1,6 @@
 import React from "react"
 import { Box, Heading, Text, Button, VStack, HStack, Flex } from "@chakra-ui/react"
+import PropTypes from "prop-types"
 
 const InfoPanel = () => {
   return (

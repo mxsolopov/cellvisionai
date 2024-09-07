@@ -25,8 +25,8 @@ const UploadBox = ({
 
   // Обработчик изменения файла
   const handleFileChange = (event) => {
-    const selectedFile = event.target.files
-    setImages(selectedFile)
+    const selectedFiles = event.target.files
+    setImages(Array.from(selectedFiles))
   }
 
   // Обработчик события `dragover`

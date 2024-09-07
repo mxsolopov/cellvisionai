@@ -71,7 +71,7 @@ const App = () => {
           <Header isUploaded={isUploaded} />
           <Flex mt={4}>
             <Sidebar />
-            <ImageDisplay uploadedImages={uploadedImages} />
+            <ImageDisplay images={images} />
             <InfoPanel />
           </Flex>
         </Box>

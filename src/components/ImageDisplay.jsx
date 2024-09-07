@@ -14,31 +14,48 @@ import {
   Text,
 } from "@chakra-ui/react"
 
-const ImageDisplay = ({ uploadedImages }) => {
+const ImageDisplay = ({ images }) => {
   const [currentIndex, setCurrentIndex] = React.useState(0)
+  const [imagesURLs, setImagesURLs] = React.useState([])
+
+  React.useEffect(() => {
+    const files = Array.from(images);
+    const urls = [];
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        urls.push(reader.result);
+        if (urls.length === files.length) {
+          setImagesURLs(urls);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }, [images]);
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % uploadedImages.length)
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
   }
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? uploadedImages.length - 1 : prevIndex - 1
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
     )
   }
 
   return (
     <Flex w="50%" direction="column" align="center" gap={4}>
       <HStack>
-        <Button size="sm" onClick={handlePrev} disabled={uploadedImages.length === 0}>
+        <Button size="sm" onClick={handlePrev} disabled={images.length === 0}>
           Назад
         </Button>
         <Text>
-          {uploadedImages.length > 0
-            ? `${currentIndex + 1} из ${uploadedImages.length}`
+          {images.length > 0
+            ? `${currentIndex + 1} из ${images.length}`
             : "Нет изображений"}
         </Text>
-        <Button size="sm" onClick={handleNext} disabled={uploadedImages.length === 0}>
+        <Button size="sm" onClick={handleNext} disabled={images.length === 0}>
           Далее
         </Button>
       </HStack>
@@ -57,16 +74,15 @@ const ImageDisplay = ({ uploadedImages }) => {
           <SliderThumb />
         </Slider>
       </HStack>
-      {uploadedImages.length > 0 && (
-        // <Image w="500px" src={uploadedImages[currentIndex]} alt="Image" />
-        uploadedImages[currentIndex]
+      {imagesURLs.length > 0 && (
+        <Image w="500px" src={imagesURLs[currentIndex]} alt="Image" />
       )}
     </Flex>
   )
 }
 
 ImageDisplay.propTypes = {
-  uploadedImages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  images: PropTypes.arrayOf(PropTypes.instanceOf(File)).isRequired,
 }
 
 export default ImageDisplay

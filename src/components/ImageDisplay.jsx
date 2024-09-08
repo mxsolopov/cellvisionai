@@ -1,38 +1,26 @@
 import React from "react"
 import PropTypes from "prop-types"
-import {
-  Flex,
-  Button,
-  RadioGroup,
-  Radio,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  Image,
-  HStack,
-  Text,
-} from "@chakra-ui/react"
+import { Flex, Button, Image, HStack, Text, Box } from "@chakra-ui/react"
 
-const ImageDisplay = ({ images }) => {
+const ImageDisplay = ({ images, masks, opacity, maskViewMode }) => {
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [imagesURLs, setImagesURLs] = React.useState([])
 
   React.useEffect(() => {
-    const files = Array.from(images);
-    const urls = [];
+    const files = Array.from(images)
+    const urls = []
 
     files.forEach((file) => {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onloadend = () => {
-        urls.push(reader.result);
+        urls.push(reader.result)
         if (urls.length === files.length) {
-          setImagesURLs(urls);
+          setImagesURLs(urls)
         }
-      };
-      reader.readAsDataURL(file);
-    });
-  }, [images]);
+      }
+      reader.readAsDataURL(file)
+    })
+  }, [images])
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
@@ -46,6 +34,33 @@ const ImageDisplay = ({ images }) => {
 
   return (
     <Flex w="50%" direction="column" align="center" gap={4}>
+      <Box position="relative" w="500px" h="500px" overflow="hidden">
+        {imagesURLs.length > 0 && (
+          <Image
+            w="500px"
+            src={imagesURLs[currentIndex]}
+            alt="Original Image"
+            position="absolute"
+            top="0"
+            left="0"
+            zIndex="1"
+          />
+        )}
+        {masks.length > 0 && (
+          <Image
+            w="500px"
+            src={`data:image/png;base64,${masks[currentIndex]}`}
+            alt="Mask Image"
+            position="absolute"
+            top="0"
+            left="0"
+            zIndex="2"
+            opacity={maskViewMode == "1" ? 1 : opacity}
+            mixBlendMode={maskViewMode == "3" ? "overlay" : ""}
+            display={maskViewMode == "2" ? "none" : ""}
+          />
+        )}
+      </Box>
       <HStack>
         <Button size="sm" onClick={handlePrev} disabled={images.length === 0}>
           Назад
@@ -59,30 +74,15 @@ const ImageDisplay = ({ images }) => {
           Далее
         </Button>
       </HStack>
-      <HStack justify="center" w="100%">
-        <RadioGroup defaultValue="1">
-          <HStack spacing={4}>
-            <Radio value="1">Без маски</Radio>
-            <Radio value="2">Показать маску</Radio>
-            <Radio value="3">Наложить маску</Radio>
-          </HStack>
-        </RadioGroup>
-        <Slider defaultValue={0.5} min={0} max={1} step={0.1} w="20%">
-          <SliderTrack>
-            <SliderFilledTrack />
-          </SliderTrack>
-          <SliderThumb />
-        </Slider>
-      </HStack>
-      {imagesURLs.length > 0 && (
-        <Image w="500px" src={imagesURLs[currentIndex]} alt="Image" />
-      )}
     </Flex>
   )
 }
 
 ImageDisplay.propTypes = {
   images: PropTypes.arrayOf(PropTypes.instanceOf(File)).isRequired,
+  masks: PropTypes.arrayOf(PropTypes.string).isRequired,
+  opacity: PropTypes.number.isRequired,
+  maskViewMode: PropTypes.string.isRequired,
 }
 
 export default ImageDisplay

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChakraProvider, Box, Spinner, Text, Center } from '@chakra-ui/react';
+import React from "react"
+import { ChakraProvider, Box, Spinner, Text, Center } from "@chakra-ui/react"
 
 const LoadingScreen = () => {
   return (
@@ -23,7 +23,7 @@ const LoadingScreen = () => {
         </Center>
       </Box>
     </ChakraProvider>
-  );
-};
+  )
+}
 
-export default LoadingScreen;
+export default LoadingScreen

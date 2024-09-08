@@ -157,7 +157,7 @@ const UploadBox = ({
 }
 
 UploadBox.propTypes = {
-  images: PropTypes.instanceOf(FileList),
+  images: PropTypes.arrayOf(PropTypes.instanceOf(File)),
   setImages: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   isUploading: PropTypes.bool.isRequired,

@@ -11,56 +11,53 @@ const App = () => {
   const [images, setImages] = React.useState(null)
   const [isUploading, setIsUploading] = React.useState(false)
   const [isUploaded, setIsUploaded] = React.useState(false)
-  const [uploadedImages, setUploadedImages] = React.useState([])
+  const [masks, setMasks] = React.useState([])
+  const [maskViewMode, setMaskViewMode] = React.useState("1")
+  const [opacity, setOpacity] = React.useState(0.2)
 
   const URL = "http://127.0.0.1:5000"
 
   const handleSubmit = async (event) => {
-    event.preventDefault() // Предотвращает перезагрузку страницы при отправке формы
-
-    setIsUploading(true)
-
-    const promises = []
-
-    // Функция для добавления файла с задержкой
+    event.preventDefault();
+  
+    setIsUploading(true);
+  
+    const promises = [];
+  
     const addFileWithDelay = async (index) => {
-      await new Promise((resolve) => setTimeout(resolve, 3000)) // Ожидание задержки
-      const formData = new FormData()
-      formData.append("images", images[index])
-
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const formData = new FormData();
+      formData.append("images", images[index]);
+  
       const promise = fetch(`${URL}/upload-cv`, {
         method: "POST",
         body: formData,
       })
         .then((response) => response.json())
         .then((data) => {
-          // Если загрузка прошла успешно, обновляем состояние uploadedImages
-          if (data.file_path) {
-            console.log("File uploaded successfully:", data.file_path)
-            setUploadedImages((prevFilePath) => [...prevFilePath, data.file_path])
+          if (data.mask_base64) {
+            console.log("File uploaded successfully:", data.mask_base64);
+            setMasks((prevMasks) => [...prevMasks, data.mask_base64]);
           } else {
-            console.error("File upload failed:", data.error)
+            console.error("File upload failed:", data.error);
           }
         })
         .catch((error) => {
-          console.error("File upload failed:", error)
-        })
-
-      promises.push(promise)
-    }
-
-    // Асинхронный цикл для добавления файлов с задержкой
+          console.error("File upload failed:", error);
+        });
+  
+      promises.push(promise);
+    };
+  
     for (let i = 0; i < images.length; i++) {
-      await addFileWithDelay(i)
+      await addFileWithDelay(i);
     }
-
-    // После завершения всех асинхронных операций выполняем следующие действия
+  
     Promise.all(promises).then(() => {
-      setIsUploaded(true)
-      setIsUploading(false)
-      // setImages(null)
-    })
-  }
+      setIsUploaded(true);
+      setIsUploading(false);
+    });
+  };
 
   return (
     <>
@@ -70,8 +67,8 @@ const App = () => {
         <Box p={4}>
           <Header isUploaded={isUploaded} />
           <Flex mt={4}>
-            <Sidebar />
-            <ImageDisplay images={images} />
+            <Sidebar maskViewMode={maskViewMode} setMaskViewMode={setMaskViewMode} opacity={opacity} setOpacity={setOpacity} />
+            <ImageDisplay images={images} masks={masks} maskViewMode={maskViewMode} opacity={opacity} />
             <InfoPanel />
           </Flex>
         </Box>

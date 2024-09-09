@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import Logo from "../assets/logo.svg"
 
-const Header = ({ isUploaded }) => {
+const Header = ({ isUploaded, resetSegmentation }) => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
@@ -49,7 +49,9 @@ const Header = ({ isUploaded }) => {
           Задать вопрос
         </Link>
         {isUploaded ? (
-          <Button colorScheme="blue">Новая сегментация</Button>
+          <Button colorScheme="blue" onClick={resetSegmentation}>
+            Новая сегментация
+          </Button>
         ) : (
           <></>
         )}
@@ -60,6 +62,7 @@ const Header = ({ isUploaded }) => {
 
 Header.propTypes = {
   isUploaded: PropTypes.bool.isRequired,
+  resetSegmentation: PropTypes.func.isRequired,
 }
 
 export default Header

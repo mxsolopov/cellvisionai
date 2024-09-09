@@ -19,6 +19,17 @@ const App = () => {
 
   const URL = "http://127.0.0.1:5000"
 
+  const resetSegmentation = () => {
+    setImages(null)
+    setIsUploading(false)
+    setIsUploaded(false)
+    setMasks([])
+    setMaskViewMode("1")
+    setOpacity(0.2)
+    setThreshold(0.5)
+    setSelectedModel("unet")
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -70,7 +81,7 @@ const App = () => {
         <LoadingScreen />
       ) : isUploaded ? (
         <Box p={4}>
-          <Header isUploaded={isUploaded} />
+          <Header isUploaded={isUploaded} resetSegmentation={resetSegmentation} />
           <Flex mt={4}>
             <Sidebar
               maskViewMode={maskViewMode}
@@ -94,7 +105,7 @@ const App = () => {
         </Box>
       ) : (
         <Box p={4}>
-          <Header isUploaded={isUploaded} />
+          <Header isUploaded={isUploaded} resetSegmentation={resetSegmentation} />
           <UploadBox
             images={images}
             setImages={setImages}

@@ -13,7 +13,6 @@ import {
   SliderThumb,
   Tooltip,
   VStack,
-  HStack,
   Flex,
 } from "@chakra-ui/react"
 
@@ -24,9 +23,23 @@ const Sidebar = ({
   setOpacity,
   threshold,
   setThreshold,
+  selectedModel,
+  setSelectedModel,
+  handleSubmit,
 }) => {
   const [showOpacityTooltip, setShowOpacityTooltip] = React.useState(false)
   const [showThresholdTooltip, setShowThresholdTooltip] = React.useState(false)
+  const [isButtonDisabled, setIsButtonDisabled] = React.useState(true)
+
+  const handleModelChange = (value) => {
+    setSelectedModel(value);
+    setIsButtonDisabled(false); // Enable button on radio change
+  };
+
+  const handleThresholdChange = (value) => {
+    setThreshold(value);
+    setIsButtonDisabled(false); // Enable button on slider change
+  };
 
   return (
     <Flex w="25%" direction="column" gap="4">
@@ -71,12 +84,12 @@ const Sidebar = ({
       <Box p={4} borderWidth={1} borderRadius="md">
         <VStack align="start" spacing={4}>
           <Heading size="md">Модель сегментации</Heading>
-          <RadioGroup defaultValue="1">
+          <RadioGroup value={selectedModel} onChange={handleModelChange}>
             <VStack align="start">
-              <Radio value="1">U-Net</Radio>
-              <Radio value="2">DeepLab</Radio>
-              <Radio value="3">SegNet</Radio>
-              <Radio value="4" isDisabled>
+              <Radio value="unet">U-Net</Radio>
+              <Radio value="deeplab">DeepLab</Radio>
+              <Radio value="segnet">SegNet</Radio>
+              <Radio value="cellpose" isDisabled>
                 Cellpose (скоро!)
               </Radio>
             </VStack>
@@ -88,7 +101,7 @@ const Sidebar = ({
             max={1}
             step={0.01}
             colorScheme="teal"
-            onChange={(a) => setThreshold(a)}
+            onChange={(a) => handleThresholdChange(a)}
             onMouseEnter={() => setShowThresholdTooltip(true)}
             onMouseLeave={() => setShowThresholdTooltip(false)}
           >
@@ -106,7 +119,13 @@ const Sidebar = ({
               <SliderThumb />
             </Tooltip>
           </Slider>
-          <Button colorScheme="blue">Обновить маски</Button>
+          <Button
+            colorScheme="blue"
+            onClick={handleSubmit}
+            isDisabled={isButtonDisabled}
+          >
+            Обновить маски
+          </Button>
         </VStack>
       </Box>
     </Flex>
@@ -120,6 +139,9 @@ Sidebar.propTypes = {
   setOpacity: PropTypes.func.isRequired,
   threshold: PropTypes.number.isRequired,
   setThreshold: PropTypes.func.isRequired,
+  selectedModel: PropTypes.string.isRequired,
+  setSelectedModel: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 }
 
 export default Sidebar

@@ -15,6 +15,7 @@ const App = () => {
   const [maskViewMode, setMaskViewMode] = React.useState("1")
   const [opacity, setOpacity] = React.useState(0.2)
   const [threshold, setThreshold] = React.useState(0.5)
+  const [selectedModel, setSelectedModel] = React.useState("unet")
 
   const URL = "http://127.0.0.1:5000"
 
@@ -22,6 +23,7 @@ const App = () => {
     event.preventDefault()
 
     setIsUploading(true)
+    setMasks([]) // Очистите маски перед загрузкой новых
 
     const promises = []
 
@@ -29,6 +31,8 @@ const App = () => {
       await new Promise((resolve) => setTimeout(resolve, 3000))
       const formData = new FormData()
       formData.append("images", images[index])
+      formData.append("model", selectedModel)
+      formData.append("threshold", threshold)
 
       const promise = fetch(`${URL}/upload-cv`, {
         method: "POST",
@@ -75,6 +79,9 @@ const App = () => {
               setOpacity={setOpacity}
               threshold={threshold}
               setThreshold={setThreshold}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+              handleSubmit={handleSubmit}
             />
             <ImageDisplay
               images={images}

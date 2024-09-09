@@ -16,6 +16,7 @@ const App = () => {
   const [opacity, setOpacity] = React.useState(0.2)
   const [threshold, setThreshold] = React.useState(0.5)
   const [selectedModel, setSelectedModel] = React.useState("unet")
+  const [executionTime, setExecutionTime] = React.useState(0)
 
   const URL = "http://127.0.0.1:5000"
 
@@ -28,6 +29,7 @@ const App = () => {
     setOpacity(0.2)
     setThreshold(0.5)
     setSelectedModel("unet")
+    setExecutionTime(0)
   }
 
   const handleSubmit = async (event) => {
@@ -37,6 +39,8 @@ const App = () => {
     setMasks([]) // Очистите маски перед загрузкой новых
 
     const promises = []
+
+    const startTime = performance.now() // Start time
 
     const addFileWithDelay = async (index) => {
       await new Promise((resolve) => setTimeout(resolve, 3000))
@@ -70,6 +74,9 @@ const App = () => {
     }
 
     Promise.all(promises).then(() => {
+      const endTime = performance.now() // End time
+      const executionTime = ((endTime - startTime) / 1000).toFixed(2) // Execution time in seconds
+      setExecutionTime(executionTime) // Save execution time to state
       setIsUploaded(true)
       setIsUploading(false)
     })
@@ -103,7 +110,7 @@ const App = () => {
               maskViewMode={maskViewMode}
               opacity={opacity}
             />
-            <InfoPanel images={images} masks={masks} />
+            <InfoPanel images={images} masks={masks} executionTime={executionTime} />
           </Flex>
         </Box>
       ) : (

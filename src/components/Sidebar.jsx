@@ -17,9 +17,16 @@ import {
   Flex,
 } from "@chakra-ui/react"
 
-const Sidebar = ({ maskViewMode, setMaskViewMode, opacity, setOpacity }) => {
-
-  const [showTooltip, setShowTooltip] = React.useState(false)
+const Sidebar = ({
+  maskViewMode,
+  setMaskViewMode,
+  opacity,
+  setOpacity,
+  threshold,
+  setThreshold,
+}) => {
+  const [showOpacityTooltip, setShowOpacityTooltip] = React.useState(false)
+  const [showThresholdTooltip, setShowThresholdTooltip] = React.useState(false)
 
   return (
     <Flex w="25%" direction="column" gap="4">
@@ -33,30 +40,32 @@ const Sidebar = ({ maskViewMode, setMaskViewMode, opacity, setOpacity }) => {
               <Radio value="3">Наложить маску</Radio>
             </VStack>
           </RadioGroup>
-          <Slider
-            defaultValue={opacity}
-            min={0}
-            max={1}
-            step={0.1}
-            colorScheme="teal"
-            onChange={(v) => setOpacity(v)}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
-            <SliderTrack>
-              <SliderFilledTrack />
-            </SliderTrack>
-            <Tooltip
-              hasArrow
-              bg="teal.500"
-              color="white"
-              placement="top"
-              isOpen={showTooltip}
-              label={`${opacity}`}
+          {maskViewMode == "3" && (
+            <Slider
+              defaultValue={opacity}
+              min={0}
+              max={1}
+              step={0.1}
+              colorScheme="teal"
+              onChange={(v) => setOpacity(v)}
+              onMouseEnter={() => setShowOpacityTooltip(true)}
+              onMouseLeave={() => setShowOpacityTooltip(false)}
             >
-              <SliderThumb />
-            </Tooltip>
-          </Slider>
+              <SliderTrack>
+                <SliderFilledTrack />
+              </SliderTrack>
+              <Tooltip
+                hasArrow
+                bg="teal.500"
+                color="white"
+                placement="top"
+                isOpen={showOpacityTooltip}
+                label={`${opacity}`}
+              >
+                <SliderThumb />
+              </Tooltip>
+            </Slider>
+          )}
         </VStack>
       </Box>
       <Box p={4} borderWidth={1} borderRadius="md">
@@ -73,16 +82,31 @@ const Sidebar = ({ maskViewMode, setMaskViewMode, opacity, setOpacity }) => {
             </VStack>
           </RadioGroup>
           <Text>Порог классификации</Text>
-          <Slider defaultValue={0.5} min={0} max={1} step={0.1}>
+          <Slider
+            defaultValue={threshold}
+            min={0}
+            max={1}
+            step={0.01}
+            colorScheme="teal"
+            onChange={(a) => setThreshold(a)}
+            onMouseEnter={() => setShowThresholdTooltip(true)}
+            onMouseLeave={() => setShowThresholdTooltip(false)}
+          >
             <SliderTrack>
               <SliderFilledTrack />
             </SliderTrack>
-            <SliderThumb />
+            <Tooltip
+              hasArrow
+              bg="teal.500"
+              color="white"
+              placement="top"
+              isOpen={showThresholdTooltip}
+              label={`${threshold}`}
+            >
+              <SliderThumb />
+            </Tooltip>
           </Slider>
-          <HStack>
-            <Button colorScheme="blue">Обновить</Button>
-            <Button>Обновить все</Button>
-          </HStack>
+          <Button colorScheme="blue">Обновить маски</Button>
         </VStack>
       </Box>
     </Flex>
@@ -94,6 +118,8 @@ Sidebar.propTypes = {
   setMaskViewMode: PropTypes.func.isRequired,
   opacity: PropTypes.number.isRequired,
   setOpacity: PropTypes.func.isRequired,
+  threshold: PropTypes.number.isRequired,
+  setThreshold: PropTypes.func.isRequired,
 }
 
 export default Sidebar

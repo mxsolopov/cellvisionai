@@ -16,11 +16,6 @@ const InfoPanel = () => {
       <Box p={4} borderWidth={1} borderRadius="md">
         <VStack align="start" spacing={4}>
           <Heading size="md">Выходные файлы</Heading>
-          <Text>Скачать маску</Text>
-          <HStack>
-            <Button>PNG</Button>
-            <Button>JSON</Button>
-          </HStack>
           <Text>Скачать все маски</Text>
           <HStack>
             <Button>PNG</Button>

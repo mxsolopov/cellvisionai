@@ -26,13 +26,13 @@ const Header = ({ isUploaded }) => {
           </Heading>
         </HStack>
         <HStack>
-          <Text>Светлая тема</Text>
+          <Text fontSize="20px">🌞</Text>
           <Switch
             size="lg"
             isChecked={colorMode === "dark"}
             onChange={toggleColorMode}
           />
-          <Text>Тёмная тема</Text>
+          <Text fontSize="20px">🌜</Text>
         </HStack>
       </HStack>
       <HStack spacing={6}>

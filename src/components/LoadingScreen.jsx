@@ -15,9 +15,15 @@ const LoadingScreen = () => {
       >
         <Center height="100vh">
           <Box textAlign="center">
-            <Spinner size="xl" color="teal.500" />
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="purple.500"
+              size="xl"
+            />
             <Text mt={4} fontSize="lg" color="gray.600">
-              Загрузка...
+              Загрузка и обработка изображений...
             </Text>
           </Box>
         </Center>

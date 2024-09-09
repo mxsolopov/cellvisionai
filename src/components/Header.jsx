@@ -36,16 +36,36 @@ const Header = ({ isUploaded, resetSegmentation }) => {
         </HStack>
       </HStack>
       <HStack spacing={6}>
-        <Link href="#" fontWeight="500">
+        <Link
+          href="https://github.com/mxsolopov/cellvisionai"
+          target="_blank"
+          isExternal
+          fontWeight="500"
+        >
           Датасет
         </Link>
-        <Link href="#" fontWeight="500">
+        <Link
+          href="https://github.com/mxsolopov/cellvisionai"
+          target="_blank"
+          isExternal
+          fontWeight="500"
+        >
           Статья
         </Link>
-        <Link href="#" fontWeight="500">
+        <Link
+          href="https://github.com/mxsolopov/cellvisionai"
+          target="_blank"
+          isExternal
+          fontWeight="500"
+        >
           GitHub
         </Link>
-        <Link href="#" fontWeight="500">
+        <Link
+          href="https://t.me/mxsolopov"
+          target="_blank"
+          isExternal
+          fontWeight="500"
+        >
           Задать вопрос
         </Link>
         {isUploaded ? (

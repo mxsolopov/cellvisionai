@@ -81,7 +81,10 @@ const App = () => {
         <LoadingScreen />
       ) : isUploaded ? (
         <Box p={4}>
-          <Header isUploaded={isUploaded} resetSegmentation={resetSegmentation} />
+          <Header
+            isUploaded={isUploaded}
+            resetSegmentation={resetSegmentation}
+          />
           <Flex mt={4}>
             <Sidebar
               maskViewMode={maskViewMode}
@@ -100,12 +103,15 @@ const App = () => {
               maskViewMode={maskViewMode}
               opacity={opacity}
             />
-            <InfoPanel />
+            <InfoPanel images={images} masks={masks} />
           </Flex>
         </Box>
       ) : (
         <Box p={4}>
-          <Header isUploaded={isUploaded} resetSegmentation={resetSegmentation} />
+          <Header
+            isUploaded={isUploaded}
+            resetSegmentation={resetSegmentation}
+          />
           <UploadBox
             images={images}
             setImages={setImages}

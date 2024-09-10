@@ -12,36 +12,7 @@ import PropTypes from "prop-types"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
 
-const InfoPanel = ({ images, masks, executionTime }) => {
-  const calculateConfluency = (maskBase64) => {
-    const img = new Image()
-    img.src = `data:image/png;base64,${maskBase64}`
-
-    return new Promise((resolve) => {
-      img.onload = () => {
-        const canvas = document.createElement("canvas")
-        canvas.width = img.width
-        canvas.height = img.height
-        const ctx = canvas.getContext("2d")
-        ctx.drawImage(img, 0, 0)
-
-        const imageData = ctx.getImageData(0, 0, img.width, img.height)
-        const data = imageData.data
-
-        let whitePixelCount = 0
-        for (let i = 0; i < data.length; i += 4) {
-          if (data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255) {
-            whitePixelCount++
-          }
-        }
-
-        const totalPixels = img.width * img.height
-        const confluency = ((whitePixelCount / totalPixels) * 100).toFixed(2)
-
-        resolve(confluency)
-      }
-    })
-  }
+const InfoPanel = ({ images, masks, executionTime, currentConfluency, calculateConfluency }) => {
 
   const calculateTotalConfluency = async () => {
     const confluencies = await Promise.all(masks.map(calculateConfluency))
@@ -52,12 +23,10 @@ const InfoPanel = ({ images, masks, executionTime }) => {
     return totalConfluency
   }
 
-  const [currentConfluency, setCurrentConfluency] = React.useState(0)
   const [totalConfluency, setTotalConfluency] = React.useState(0)
 
   React.useEffect(() => {
     if (masks.length > 0) {
-      calculateConfluency(masks[0]).then(setCurrentConfluency)
       calculateTotalConfluency().then(setTotalConfluency)
     }
   }, [masks])
@@ -190,6 +159,8 @@ InfoPanel.propTypes = {
   images: PropTypes.arrayOf(PropTypes.instanceOf(File)).isRequired,
   masks: PropTypes.arrayOf(PropTypes.string).isRequired,
   executionTime: PropTypes.number.isRequired,
+  currentConfluency: PropTypes.string.isRequired,
+  calculateConfluency: PropTypes.func.isRequired,
 }
 
 export default InfoPanel

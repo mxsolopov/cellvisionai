@@ -17,6 +17,44 @@ const App = () => {
   const [threshold, setThreshold] = React.useState(0.5)
   const [selectedModel, setSelectedModel] = React.useState("unet")
   const [executionTime, setExecutionTime] = React.useState(0)
+  const [currentIndex, setCurrentIndex] = React.useState(0)
+  const [currentConfluency, setCurrentConfluency] = React.useState(0)
+
+  const calculateConfluency = (maskBase64) => {
+    const img = new Image()
+    img.src = `data:image/png;base64,${maskBase64}`
+
+    return new Promise((resolve) => {
+      img.onload = () => {
+        const canvas = document.createElement("canvas")
+        canvas.width = img.width
+        canvas.height = img.height
+        const ctx = canvas.getContext("2d")
+        ctx.drawImage(img, 0, 0)
+
+        const imageData = ctx.getImageData(0, 0, img.width, img.height)
+        const data = imageData.data
+
+        let whitePixelCount = 0
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i] === 255 && data[i + 1] === 255 && data[i + 2] === 255) {
+            whitePixelCount++
+          }
+        }
+
+        const totalPixels = img.width * img.height
+        const confluency = ((whitePixelCount / totalPixels) * 100).toFixed(2)
+
+        resolve(confluency)
+      }
+    })
+  }
+
+  React.useEffect(() => {
+    if (masks.length > 0 && masks[currentIndex]) {
+      calculateConfluency(masks[currentIndex]).then(setCurrentConfluency)
+    }
+  }, [currentIndex, masks])
 
   const URL = "https://solopov.pro/"
 
@@ -76,7 +114,7 @@ const App = () => {
     Promise.all(promises).then(() => {
       const endTime = performance.now() // End time
       const executionTime = ((endTime - startTime) / 1000).toFixed(2) // Execution time in seconds
-      setExecutionTime(executionTime) // Save execution time to state
+      setExecutionTime(parseFloat(executionTime)) // Save execution time to state
       setIsUploaded(true)
       setIsUploading(false)
     })
@@ -109,8 +147,16 @@ const App = () => {
               masks={masks}
               maskViewMode={maskViewMode}
               opacity={opacity}
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
             />
-            <InfoPanel images={images} masks={masks} executionTime={executionTime} />
+            <InfoPanel
+              images={images}
+              masks={masks}
+              executionTime={executionTime}
+              currentConfluency={currentConfluency}
+              calculateConfluency={calculateConfluency}
+            />
           </Flex>
         </Box>
       ) : (

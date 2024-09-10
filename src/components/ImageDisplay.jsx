@@ -2,8 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import { Flex, Button, Image, HStack, Text, Box } from "@chakra-ui/react"
 
-const ImageDisplay = ({ images, masks, opacity, maskViewMode }) => {
-  const [currentIndex, setCurrentIndex] = React.useState(0)
+const ImageDisplay = ({ images, masks, opacity, maskViewMode, currentIndex, setCurrentIndex }) => {
   const [imagesURLs, setImagesURLs] = React.useState([])
 
   React.useEffect(() => {
@@ -83,6 +82,8 @@ ImageDisplay.propTypes = {
   masks: PropTypes.arrayOf(PropTypes.string).isRequired,
   opacity: PropTypes.number.isRequired,
   maskViewMode: PropTypes.string.isRequired,
+  currentIndex: PropTypes.number.isRequired,
+  setCurrentIndex: PropTypes.func.isRequired,
 }
 
 export default ImageDisplay

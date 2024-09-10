@@ -18,7 +18,7 @@ const App = () => {
   const [selectedModel, setSelectedModel] = React.useState("unet")
   const [executionTime, setExecutionTime] = React.useState(0)
 
-  const URL = "http://127.0.0.1:5000"
+  const URL = "https://solopov.pro/"
 
   const resetSegmentation = () => {
     setImages(null)

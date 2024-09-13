@@ -19,8 +19,8 @@ const Header = ({ isUploaded, resetSegmentation }) => {
   return (
     <Flex justify="space-between" align="center">
       <HStack spacing={8}>
-        <HStack>
-          <Image src={Logo} alt="Logo" />
+        <HStack spacing={0}>
+          <Image src={Logo} alt="Logo" width="62px"/>
           <Heading size="lg" fontWeight="bold" color="purple.600">
             CellVision.AI
           </Heading>

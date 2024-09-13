@@ -1,5 +1,6 @@
 import React from "react"
-import { ChakraProvider, Box, Spinner, Text, Center } from "@chakra-ui/react"
+import { ChakraProvider, Box, Text, Center, Image, Flex } from "@chakra-ui/react"
+import AnimatedLogo from "../assets/logo_animated.svg"
 
 const LoadingScreen = () => {
   return (
@@ -14,18 +15,12 @@ const LoadingScreen = () => {
         zIndex="1000"
       >
         <Center height="100vh">
-          <Box textAlign="center">
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="purple.500"
-              size="xl"
-            />
+          <Flex direction="column" align="center">
+            <Image src={AnimatedLogo} alt="Logo" width="120px" />
             <Text mt={4} fontSize="lg" color="gray.600">
               Загрузка и обработка изображений...
             </Text>
-          </Box>
+          </Flex>
         </Center>
       </Box>
     </ChakraProvider>

@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Flex } from "@chakra-ui/react"
+import { Box, Flex, useBreakpointValue } from "@chakra-ui/react"
 import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
 import ImageDisplay from "./components/ImageDisplay"
@@ -58,7 +58,6 @@ const App = () => {
 
   // const URL = "https://solopov.pro/"
   const URL = "http://localhost:5000/"
-
 
   const resetSegmentation = () => {
     setImages(null)
@@ -122,6 +121,9 @@ const App = () => {
     })
   }
 
+  // Determine if the view is mobile
+  const isMobile = useBreakpointValue({ base: true, md: false })
+
   return (
     <>
       {isUploading ? (
@@ -132,7 +134,17 @@ const App = () => {
             isUploaded={isUploaded}
             resetSegmentation={resetSegmentation}
           />
-          <Flex mt={4}>
+          <Flex mt={4} direction={{ base: "column", md: "row" }}>
+            {isMobile && (
+              <ImageDisplay
+                images={images}
+                masks={masks}
+                maskViewMode={maskViewMode}
+                opacity={opacity}
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+              />
+            )}
             <Sidebar
               maskViewMode={maskViewMode}
               setMaskViewMode={setMaskViewMode}
@@ -144,14 +156,16 @@ const App = () => {
               setSelectedModel={setSelectedModel}
               handleSubmit={handleSubmit}
             />
-            <ImageDisplay
-              images={images}
-              masks={masks}
-              maskViewMode={maskViewMode}
-              opacity={opacity}
-              currentIndex={currentIndex}
-              setCurrentIndex={setCurrentIndex}
-            />
+            {!isMobile && (
+              <ImageDisplay
+                images={images}
+                masks={masks}
+                maskViewMode={maskViewMode}
+                opacity={opacity}
+                currentIndex={currentIndex}
+                setCurrentIndex={setCurrentIndex}
+              />
+            )}
             <InfoPanel
               images={images}
               masks={masks}

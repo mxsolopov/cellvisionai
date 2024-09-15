@@ -7,13 +7,24 @@ import {
   VStack,
   HStack,
   Flex,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  useBreakpointValue,
 } from "@chakra-ui/react"
 import PropTypes from "prop-types"
 import JSZip from "jszip"
 import { saveAs } from "file-saver"
 
-const InfoPanel = ({ images, masks, executionTime, currentConfluency, calculateConfluency }) => {
-
+const InfoPanel = ({
+  images,
+  masks,
+  executionTime,
+  currentConfluency,
+  calculateConfluency,
+}) => {
   const calculateTotalConfluency = async () => {
     const confluencies = await Promise.all(masks.map(calculateConfluency))
     const totalConfluency = (
@@ -131,26 +142,66 @@ const InfoPanel = ({ images, masks, executionTime, currentConfluency, calculateC
     })
   }
 
-  return (
+  // Determine if the view is mobile
+  const isMobile = useBreakpointValue({ base: true, md: false })
+
+  const infoContent = (
+    <Box
+      p={{ base: 0, md: 4 }}
+      borderWidth={{ base: 0, md: 1 }}
+      borderRadius="md"
+    >
+      <VStack align="start" spacing={4}>
+        {!isMobile && <Heading size="md">Информация</Heading>}
+        <Text>Текущая конфлуэнтность - {currentConfluency}%</Text>
+        <Text>Общая конфлуэнтность - {totalConfluency}%</Text>
+        <Text>Время обработки - {executionTime} сек</Text>
+      </VStack>
+    </Box>
+  )
+
+  const maskContent = (
+    <Box
+      p={{ base: 0, md: 4 }}
+      borderWidth={{ base: 0, md: 1 }}
+      borderRadius="md"
+    >
+      <VStack align="start" spacing={4}>
+        {!isMobile && <Heading size="md">Выходные файлы</Heading>}
+        <Text>Скачать все маски</Text>
+        <HStack>
+          <Button onClick={downloadMasksAsZip}>PNG</Button>
+          <Button onClick={downloadMasksAsJsonZip}>JSON</Button>
+        </HStack>
+      </VStack>
+    </Box>
+  )
+
+  return isMobile ? (
+    <Accordion allowToggle>
+      <AccordionItem>
+        <AccordionButton>
+          <Box flex="1" textAlign="left" fontWeight="bold">
+            Информация
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
+        <AccordionPanel pb={4}>{infoContent}</AccordionPanel>
+      </AccordionItem>
+      <AccordionItem>
+        <AccordionButton>
+          <Box flex="1" textAlign="left" fontWeight="bold">
+            Выходные файлы
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
+        <AccordionPanel pb={4}>{maskContent}</AccordionPanel>
+      </AccordionItem>
+    </Accordion>
+  ) : (
     <Flex w="25%" direction="column" gap="4">
-      <Box p={4} borderWidth={1} borderRadius="md">
-        <VStack align="start" spacing={4}>
-          <Heading size="md">Информация</Heading>
-          <Text>Текущая конфлуэнтность - {currentConfluency}%</Text>
-          <Text>Общая конфлуэнтность - {totalConfluency}%</Text>
-          <Text>Время обработки - {executionTime} сек</Text>
-        </VStack>
-      </Box>
-      <Box p={4} borderWidth={1} borderRadius="md">
-        <VStack align="start" spacing={4}>
-          <Heading size="md">Выходные файлы</Heading>
-          <Text>Скачать все маски</Text>
-          <HStack>
-            <Button onClick={downloadMasksAsZip}>PNG</Button>
-            <Button onClick={downloadMasksAsJsonZip}>JSON</Button>
-          </HStack>
-        </VStack>
-      </Box>
+      {infoContent}
+      {maskContent}
     </Flex>
   )
 }

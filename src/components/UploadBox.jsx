@@ -54,7 +54,7 @@ const UploadBox = ({
       <Heading mt={8} align="center">
         Cегментация микрофотографий клеточных культур
       </Heading>
-      <Text align="center" color="gray.500" w="50%" mt={4} ml="auto" mr="auto">
+      <Text align="center" color="gray.500" w={{ base: "90%", md: "50%" }} mt={4} ml="auto" mr="auto">
         Сервис используется для сегментации фотографий ММСК, сделанных в режиме
         фазового контраста, на основе обученных нейросетевых моделей.
       </Text>
@@ -81,7 +81,7 @@ const UploadBox = ({
           onDrop={handleDrop}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
-          height="280px"
+          height={{ base: "400px", md: "280px" }}
           mt={4}
         >
           <form onSubmit={handleSubmit}>

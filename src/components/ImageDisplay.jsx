@@ -2,7 +2,14 @@ import React from "react"
 import PropTypes from "prop-types"
 import { Flex, Button, Image, HStack, Text, Box } from "@chakra-ui/react"
 
-const ImageDisplay = ({ images, masks, opacity, maskViewMode, currentIndex, setCurrentIndex }) => {
+const ImageDisplay = ({
+  images,
+  masks,
+  opacity,
+  maskViewMode,
+  currentIndex,
+  setCurrentIndex,
+}) => {
   const [imagesURLs, setImagesURLs] = React.useState([])
 
   React.useEffect(() => {
@@ -32,11 +39,21 @@ const ImageDisplay = ({ images, masks, opacity, maskViewMode, currentIndex, setC
   }
 
   return (
-    <Flex w="50%" direction="column" align="center" gap={4}>
-      <Box position="relative" w="500px" h="500px" overflow="hidden">
+    <Flex
+      w={{ base: "100%", md: "50%" }}
+      direction="column"
+      align="center"
+      gap={4}
+    >
+      <Box
+        position="relative"
+        w={{ base: "90vw", md: "500px" }}
+        h={{ base: "90vw", md: "500px" }}
+        overflow="hidden"
+      >
         {imagesURLs.length > 0 && (
           <Image
-            w="500px"
+            w={{ base: "90vw", md: "500px" }}
             src={imagesURLs[currentIndex]}
             alt="Original Image"
             position="absolute"
@@ -47,7 +64,7 @@ const ImageDisplay = ({ images, masks, opacity, maskViewMode, currentIndex, setC
         )}
         {masks.length > 0 && (
           <Image
-            w="500px"
+            w={{ base: "90vw", md: "500px" }}
             src={`data:image/png;base64,${masks[currentIndex]}`}
             alt="Mask Image"
             position="absolute"

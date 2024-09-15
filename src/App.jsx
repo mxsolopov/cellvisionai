@@ -75,7 +75,7 @@ const App = () => {
     event.preventDefault()
 
     setIsUploading(true)
-    setMasks([]) // Очистите маски перед загрузкой новых
+    // setMasks([]) // Очистите маски перед загрузкой новых
 
     const promises = []
 
@@ -155,6 +155,7 @@ const App = () => {
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
               handleSubmit={handleSubmit}
+              setMasks={setMasks}
             />
             {!isMobile && (
               <ImageDisplay

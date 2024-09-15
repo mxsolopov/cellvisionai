@@ -75,7 +75,7 @@ const App = () => {
     event.preventDefault()
 
     setIsUploading(true)
-    // setMasks([]) // Очистите маски перед загрузкой новых
+    setMasks([]) // Очистите маски перед загрузкой новых
 
     const promises = []
 

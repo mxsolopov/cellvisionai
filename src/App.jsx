@@ -56,8 +56,8 @@ const App = () => {
     }
   }, [currentIndex, masks])
 
-  // const URL = "https://solopov.pro/"
-  const URL = "http://localhost:5000/"
+  const URL = "https://solopov.pro/"
+  // const URL = "http://localhost:5000/"
 
   const resetSegmentation = () => {
     setImages(null)

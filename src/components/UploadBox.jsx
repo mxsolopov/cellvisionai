@@ -81,7 +81,7 @@ const UploadBox = ({
           onDrop={handleDrop}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
-          height={{ base: "400px", md: "280px" }}
+          height={{ base: "380px", md: "280px" }}
           mt={4}
         >
           <form onSubmit={handleSubmit}>
@@ -129,7 +129,7 @@ const UploadBox = ({
               {images ? (
                 <Button
                   mx="auto"
-                  width="100px"
+                  width="140px"
                   type="submit"
                   colorScheme="teal"
                   display={isUploading ? "none" : "block"}

@@ -19,14 +19,15 @@ import JSZip from "jszip"
 import { saveAs } from "file-saver"
 
 const InfoPanel = ({
-  images,
-  masks,
+  imageData,
   executionTime,
   currentConfluency,
   calculateConfluency,
 }) => {
   const calculateTotalConfluency = async () => {
-    const confluencies = await Promise.all(masks.map(calculateConfluency))
+    const confluencies = await Promise.all(
+      imageData.map((item) => calculateConfluency(item.mask))
+    )
     const totalConfluency = (
       confluencies.reduce((acc, val) => acc + parseFloat(val), 0) /
       confluencies.length
@@ -37,27 +38,28 @@ const InfoPanel = ({
   const [totalConfluency, setTotalConfluency] = React.useState(0)
 
   React.useEffect(() => {
-    if (masks.length > 0) {
+    if (imageData.length > 0) {
       calculateTotalConfluency().then(setTotalConfluency)
     }
-  }, [masks])
+  }, [imageData])
 
   const downloadMasksAsZip = async () => {
     const zip = new JSZip()
 
-    masks.forEach((mask, index) => {
-      const byteCharacters = atob(mask)
-      const byteNumbers = new Array(byteCharacters.length)
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i)
+    imageData.forEach((item, index) => {
+      if (item.mask) {
+        const byteCharacters = atob(item.mask)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+
+        const originalName = item.file.name.split(".").slice(0, -1).join(".")
+        const maskFileName = `${originalName}_mask.png`
+
+        zip.file(maskFileName, byteArray)
       }
-      const byteArray = new Uint8Array(byteNumbers)
-
-      // Get the original file name without extension
-      const originalName = images[index].name.split(".").slice(0, -1).join(".")
-      const maskFileName = `${originalName}_mask.png`
-
-      zip.file(maskFileName, byteArray)
     })
 
     zip.generateAsync({ type: "blob" }).then((content) => {
@@ -66,28 +68,23 @@ const InfoPanel = ({
   }
 
   const convertMaskToJson = (maskBase64) => {
-    // Создаем элемент изображения
     const img = new Image()
     img.src = `data:image/png;base64,${maskBase64}`
 
     return new Promise((resolve) => {
       img.onload = () => {
-        // Создаем canvas для обработки изображения
         const canvas = document.createElement("canvas")
         canvas.width = img.width
         canvas.height = img.height
         const ctx = canvas.getContext("2d")
         ctx.drawImage(img, 0, 0)
 
-        // Получаем данные изображения
         const imageData = ctx.getImageData(0, 0, img.width, img.height)
 
-        // Инициализируем матрицу OpenCV
         const src = cv.matFromImageData(imageData)
         const gray = new cv.Mat()
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0)
 
-        // Находим контуры
         const contours = new cv.MatVector()
         const hierarchy = new cv.Mat()
         cv.findContours(
@@ -98,7 +95,6 @@ const InfoPanel = ({
           cv.CHAIN_APPROX_SIMPLE
         )
 
-        // Преобразуем контуры в формат JSON
         const contoursData = []
         for (let i = 0; i < contours.size(); i++) {
           const contour = contours.get(i)
@@ -112,13 +108,11 @@ const InfoPanel = ({
           contoursData.push(contourData)
         }
 
-        // Освобождаем ресурсы
         src.delete()
         gray.delete()
         contours.delete()
         hierarchy.delete()
 
-        // Возвращаем JSON
         resolve(JSON.stringify(contoursData, null, 4))
       }
     })
@@ -127,14 +121,15 @@ const InfoPanel = ({
   const downloadMasksAsJsonZip = async () => {
     const zip = new JSZip()
 
-    for (let index = 0; index < masks.length; index++) {
-      const jsonContent = await convertMaskToJson(masks[index])
+    for (let index = 0; index < imageData.length; index++) {
+      if (imageData[index].mask) {
+        const jsonContent = await convertMaskToJson(imageData[index].mask)
 
-      // Get the original file name without extension
-      const originalName = images[index].name.split(".").slice(0, -1).join(".")
-      const jsonFileName = `${originalName}_mask.json`
+        const originalName = imageData[index].file.name.split(".").slice(0, -1).join(".")
+        const jsonFileName = `${originalName}_mask.json`
 
-      zip.file(jsonFileName, jsonContent)
+        zip.file(jsonFileName, jsonContent)
+      }
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
@@ -142,7 +137,6 @@ const InfoPanel = ({
     })
   }
 
-  // Determine if the view is mobile
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   const infoContent = (
@@ -207,8 +201,13 @@ const InfoPanel = ({
 }
 
 InfoPanel.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.instanceOf(File)).isRequired,
-  masks: PropTypes.arrayOf(PropTypes.string).isRequired,
+  imageData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      file: PropTypes.instanceOf(File).isRequired,
+      mask: PropTypes.string,
+    })
+  ).isRequired,
   executionTime: PropTypes.number.isRequired,
   currentConfluency: PropTypes.string.isRequired,
   calculateConfluency: PropTypes.func.isRequired,

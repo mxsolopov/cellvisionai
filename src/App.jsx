@@ -8,10 +8,9 @@ import UploadBox from "./components/UploadBox"
 import LoadingScreen from "./components/LoadingScreen"
 
 const App = () => {
-  const [images, setImages] = React.useState(null)
+  const [imageData, setImageData] = React.useState([]) // Объединяем изображения и маски в один стейт
   const [isUploading, setIsUploading] = React.useState(false)
   const [isUploaded, setIsUploaded] = React.useState(false)
-  const [masks, setMasks] = React.useState([])
   const [maskViewMode, setMaskViewMode] = React.useState("1")
   const [opacity, setOpacity] = React.useState(0.2)
   const [threshold, setThreshold] = React.useState(0.5)
@@ -51,40 +50,39 @@ const App = () => {
   }
 
   React.useEffect(() => {
-    if (masks.length > 0 && masks[currentIndex]) {
-      calculateConfluency(masks[currentIndex]).then(setCurrentConfluency)
+    if (imageData.length > 0 && imageData[currentIndex].mask) {
+      calculateConfluency(imageData[currentIndex].mask).then(
+        setCurrentConfluency
+      )
     }
-  }, [currentIndex, masks])
+  }, [currentIndex, imageData])
 
-  const URL = "https://solopov.pro/"
-  // const URL = "http://localhost:5000/"
+  const URL = "http://localhost:5000/"
 
   const resetSegmentation = () => {
-    setImages(null)
+    setImageData([])
     setIsUploading(false)
     setIsUploaded(false)
-    setMasks([])
     setMaskViewMode("1")
     setOpacity(0.2)
     setThreshold(0.5)
     setSelectedModel("unet")
     setExecutionTime(0)
+    setCurrentIndex(0)
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
 
     setIsUploading(true)
-    setMasks([]) // Очистите маски перед загрузкой новых
-
     const promises = []
 
-    const startTime = performance.now() // Start time
+    const startTime = performance.now()
 
     const addFileWithDelay = async (index) => {
       await new Promise((resolve) => setTimeout(resolve, 3000))
       const formData = new FormData()
-      formData.append("images", images[index])
+      formData.append("images", imageData[index].file)
       formData.append("model", selectedModel)
       formData.append("threshold", threshold)
 
@@ -96,7 +94,11 @@ const App = () => {
         .then((data) => {
           if (data.mask_base64) {
             console.log("File uploaded successfully:", data.mask_base64)
-            setMasks((prevMasks) => [...prevMasks, data.mask_base64])
+            setImageData((prevData) =>
+              prevData.map((item, idx) =>
+                idx === index ? { ...item, mask: data.mask_base64 } : item
+              )
+            )
           } else {
             console.error("File upload failed:", data.error)
           }
@@ -108,20 +110,19 @@ const App = () => {
       promises.push(promise)
     }
 
-    for (let i = 0; i < images.length; i++) {
+    for (let i = 0; i < imageData.length; i++) {
       await addFileWithDelay(i)
     }
 
     Promise.all(promises).then(() => {
-      const endTime = performance.now() // End time
-      const executionTime = ((endTime - startTime) / 1000).toFixed(2) // Execution time in seconds
-      setExecutionTime(parseFloat(executionTime)) // Save execution time to state
+      const endTime = performance.now()
+      const executionTime = ((endTime - startTime) / 1000).toFixed(2)
+      setExecutionTime(parseFloat(executionTime))
       setIsUploaded(true)
       setIsUploading(false)
     })
   }
 
-  // Determine if the view is mobile
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (
@@ -137,8 +138,7 @@ const App = () => {
           <Flex mt={4} direction={{ base: "column", md: "row" }}>
             {isMobile && (
               <ImageDisplay
-                images={images}
-                masks={masks}
+                imageData={imageData}
                 maskViewMode={maskViewMode}
                 opacity={opacity}
                 currentIndex={currentIndex}
@@ -155,12 +155,10 @@ const App = () => {
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
               handleSubmit={handleSubmit}
-              setMasks={setMasks}
             />
             {!isMobile && (
               <ImageDisplay
-                images={images}
-                masks={masks}
+                imageData={imageData}
                 maskViewMode={maskViewMode}
                 opacity={opacity}
                 currentIndex={currentIndex}
@@ -168,8 +166,7 @@ const App = () => {
               />
             )}
             <InfoPanel
-              images={images}
-              masks={masks}
+              imageData={imageData}
               executionTime={executionTime}
               currentConfluency={currentConfluency}
               calculateConfluency={calculateConfluency}
@@ -183,8 +180,8 @@ const App = () => {
             resetSegmentation={resetSegmentation}
           />
           <UploadBox
-            images={images}
-            setImages={setImages}
+            imageData={imageData}
+            setImageData={setImageData}
             handleSubmit={handleSubmit}
             isUploading={isUploading}
             isUploaded={isUploaded}

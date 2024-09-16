@@ -13,39 +13,39 @@ import {
 import FileIcon from "../assets/fileicon.svg"
 import Check from "../assets/check.svg"
 
-const UploadBox = ({
-  images,
-  setImages,
-  handleSubmit,
-  isUploading,
-  isUploaded,
-}) => {
+const UploadBox = ({ imageData, setImageData, handleSubmit, isUploading, isUploaded }) => {
   const { colorMode, toggleColorMode } = useColorMode()
   const [isDragging, setIsDragging] = React.useState(false)
 
-  // Обработчик изменения файла
   const handleFileChange = (event) => {
     const selectedFiles = event.target.files
-    setImages(Array.from(selectedFiles))
+    const filesArray = Array.from(selectedFiles).map((file, index) => ({
+      id: index,
+      file,
+      mask: null,
+    }))
+    setImageData(filesArray)
   }
 
-  // Обработчик события `dragover`
   const handleDragOver = (event) => {
     event.preventDefault()
     setIsDragging(true)
   }
 
-  // Обработчик события `drop`
   const handleDrop = (event) => {
     event.preventDefault()
     setIsDragging(false)
     const droppedFiles = event.dataTransfer.files
     if (droppedFiles.length > 0) {
-      setImages(droppedFiles)
+      const filesArray = Array.from(droppedFiles).map((file, index) => ({
+        id: index,
+        file,
+        mask: null,
+      }))
+      setImageData(filesArray)
     }
   }
 
-  // Обработчик события `dragenter` и `dragleave` для визуальных эффектов
   const handleDragEnter = () => setIsDragging(true)
   const handleDragLeave = () => setIsDragging(false)
 
@@ -54,7 +54,14 @@ const UploadBox = ({
       <Heading mt={8} align="center">
         Cегментация микрофотографий клеточных культур
       </Heading>
-      <Text align="center" color="gray.500" w={{ base: "90%", md: "50%" }} mt={4} ml="auto" mr="auto">
+      <Text
+        align="center"
+        color="gray.500"
+        w={{ base: "90%", md: "50%" }}
+        mt={4}
+        ml="auto"
+        mr="auto"
+      >
         Сервис используется для сегментации фотографий ММСК, сделанных в режиме
         фазового контраста, на основе обученных нейросетевых моделей.
       </Text>
@@ -92,7 +99,7 @@ const UploadBox = ({
                   name="file"
                   accept="image/*"
                   onChange={handleFileChange}
-                  style={{ display: "none" }} // Скрываем Input
+                  style={{ display: "none" }}
                   id="file-upload"
                   disabled={isUploaded}
                   multiple
@@ -101,14 +108,14 @@ const UploadBox = ({
                 <label htmlFor="file-upload">
                   <VStack>
                     <Image
-                      src={images ? Check : FileIcon}
+                      src={imageData.length !== 0 ? Check : FileIcon}
                       width="64px"
                       height="64px"
                       alt="File"
                     />
                     <Text color="gray.600">
-                      {images ? (
-                        `Добавлено ${images.length} файл(ов)`
+                      {imageData.length !== 0 ? (
+                        `Добавлено ${imageData.length} файл(ов)`
                       ) : (
                         <>
                           Перетащите файлы сюда или{" "}
@@ -126,19 +133,15 @@ const UploadBox = ({
                   </VStack>
                 </label>
               </Box>
-              {images ? (
-                <Button
-                  mx="auto"
-                  width="140px"
-                  type="submit"
-                  colorScheme="teal"
-                  display={isUploading ? "none" : "block"}
-                >
-                  Загрузить
-                </Button>
-              ) : (
-                <></>
-              )}
+              <Button
+                mx="auto"
+                width="140px"
+                type="submit"
+                colorScheme="teal"
+                display={imageData.length == 0 ? "none" : "block"}
+              >
+                Загрузить
+              </Button>
             </VStack>
           </form>
         </VStack>
@@ -157,8 +160,14 @@ const UploadBox = ({
 }
 
 UploadBox.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.instanceOf(File)),
-  setImages: PropTypes.func.isRequired,
+  imageData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      file: PropTypes.instanceOf(File).isRequired,
+      mask: PropTypes.string,
+    })
+  ).isRequired,
+  setImageData: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   isUploading: PropTypes.bool.isRequired,
   isUploaded: PropTypes.bool.isRequired,

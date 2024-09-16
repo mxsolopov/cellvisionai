@@ -3,8 +3,7 @@ import PropTypes from "prop-types"
 import { Flex, Button, Image, HStack, Text, Box } from "@chakra-ui/react"
 
 const ImageDisplay = ({
-  images,
-  masks,
+  imageData,
   opacity,
   maskViewMode,
   currentIndex,
@@ -13,28 +12,26 @@ const ImageDisplay = ({
   const [imagesURLs, setImagesURLs] = React.useState([])
 
   React.useEffect(() => {
-    const files = Array.from(images)
-    const urls = []
-
-    files.forEach((file) => {
+    const urls = imageData.map((item) => {
       const reader = new FileReader()
-      reader.onloadend = () => {
-        urls.push(reader.result)
-        if (urls.length === files.length) {
-          setImagesURLs(urls)
+      reader.readAsDataURL(item.file)
+      return new Promise((resolve) => {
+        reader.onloadend = () => {
+          resolve(reader.result)
         }
-      }
-      reader.readAsDataURL(file)
+      })
     })
-  }, [images])
+
+    Promise.all(urls).then(setImagesURLs)
+  }, [imageData])
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % imageData.length)
   }
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? imageData.length - 1 : prevIndex - 1
     )
   }
 
@@ -62,10 +59,10 @@ const ImageDisplay = ({
             zIndex="1"
           />
         )}
-        {masks.length > 0 && (
+        {imageData[currentIndex].mask && (
           <Image
             w={{ base: "90vw", md: "500px" }}
-            src={`data:image/png;base64,${masks[currentIndex]}`}
+            src={`data:image/png;base64,${imageData[currentIndex].mask}`}
             alt="Mask Image"
             position="absolute"
             top="0"
@@ -78,15 +75,23 @@ const ImageDisplay = ({
         )}
       </Box>
       <HStack>
-        <Button size="sm" onClick={handlePrev} disabled={images.length === 0}>
+        <Button
+          size="sm"
+          onClick={handlePrev}
+          disabled={imageData.length === 0}
+        >
           Назад
         </Button>
         <Text>
-          {images.length > 0
-            ? `${currentIndex + 1} из ${images.length}`
+          {imageData.length > 0
+            ? `${currentIndex + 1} из ${imageData.length}`
             : "Нет изображений"}
         </Text>
-        <Button size="sm" onClick={handleNext} disabled={images.length === 0}>
+        <Button
+          size="sm"
+          onClick={handleNext}
+          disabled={imageData.length === 0}
+        >
           Далее
         </Button>
       </HStack>
@@ -95,8 +100,13 @@ const ImageDisplay = ({
 }
 
 ImageDisplay.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.instanceOf(File)).isRequired,
-  masks: PropTypes.arrayOf(PropTypes.string).isRequired,
+  imageData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      file: PropTypes.instanceOf(File).isRequired,
+      mask: PropTypes.string,
+    })
+  ).isRequired,
   opacity: PropTypes.number.isRequired,
   maskViewMode: PropTypes.string.isRequired,
   currentIndex: PropTypes.number.isRequired,

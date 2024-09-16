@@ -23,7 +23,7 @@ import { HamburgerIcon } from "@chakra-ui/icons"
 import Logo from "../assets/logo.svg"
 
 const NavigationLinks = ({ isUploaded, resetSegmentation }) => (
-  <Flex direction={{ base: "column", md: "row" }} gap={6} align="start">
+  <Flex direction={{ base: "column", md: "row" }} gap={6} align={{ base: "start", md: "center" }}>
     <Link
       href="https://github.com/mxsolopov/cellvisionai"
       target="_blank"

@@ -57,7 +57,8 @@ const App = () => {
     }
   }, [currentIndex, imageData])
 
-  const URL = "http://localhost:5000/"
+  // const URL = "http://localhost:5000/"
+  const URL = "https://solopov.pro/"
 
   const resetSegmentation = () => {
     setImageData([])

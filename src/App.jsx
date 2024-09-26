@@ -230,7 +230,6 @@ const App = () => {
             imageData={imageData}
             setImageData={setImageData}
             handleSubmit={handleSubmit}
-            isUploading={isUploading}
             isUploaded={isUploaded}
           />
         </Box>

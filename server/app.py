@@ -1,5 +1,5 @@
 import os
-# Отключение предупредительных уведомлений tensorflow
+# Disabling warning notifications tensorflow
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from tensorflow.keras.models import model_from_json
@@ -35,19 +35,17 @@ CORS(app)
 
 UPLOAD_FOLDER_CV = 'uploads_cv'
 
-# Создание папки для загрузки изображений
+# Creating a folder for uploading images
 os.makedirs(UPLOAD_FOLDER_CV, exist_ok=True)
 app.config['UPLOAD_FOLDER_CV'] = UPLOAD_FOLDER_CV
 
-# CellVision
-
 IMAGE_SIZE = 256
 
-# Модель U-Net
+# U-Net
 def unet_model(input_size=(IMAGE_SIZE, IMAGE_SIZE, 3)):
     inputs = Input(input_size)
     
-    # Базовая модель VGG16
+    # Base model VGG16
     base_model = VGG16(weights='imagenet', include_top=False, input_tensor=inputs)
 
     # Encoder
@@ -88,7 +86,7 @@ def unet_model(input_size=(IMAGE_SIZE, IMAGE_SIZE, 3)):
 
     return model
 
-# Модель DeepLabV3Plus
+# DeepLabV3Plus
 def convolution_block(block_input, num_filters=256, kernel_size=3, dilation_rate=1, use_bias=False):
     x = Conv2D(num_filters, kernel_size=kernel_size, dilation_rate=dilation_rate, padding="same", use_bias=use_bias, kernel_initializer='he_normal')(block_input)
     x = BatchNormalization()(x)
@@ -134,11 +132,11 @@ def deep_lab_model(input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3), num_classes=1):
 
     return Model(inputs=model_input, outputs=model_output)
 
-# Модель SegNet
+# SegNet
 def segnet_model(input_size=(IMAGE_SIZE, IMAGE_SIZE, 3)):
     inputs = Input(input_size)
     
-    # Базовая модель VGG16 без верхних слоев
+    # Base model VGG16 without top layers
     base_model = VGG16(weights='imagenet', include_top=False, input_tensor=inputs)
 
     # Encoder (из VGG16)
@@ -218,13 +216,10 @@ def upload_cv():
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
 
-    # Получаем выбранную модель из запроса
     model_name = request.form.get('model')
     
-    # Получаем порог из запроса
     threshold = float(request.form.get('threshold'))
-
-    # Выбираем модель
+    
     if model_name == 'deeplab':
         model = deeplab
     elif model_name == 'segnet':
@@ -236,35 +231,26 @@ def upload_cv():
     file_path = os.path.join(app.config['UPLOAD_FOLDER_CV'], filename)
     file.save(file_path)
 
-    # Predict mask
     mask = predict_mask_with_threshold(model, file_path, threshold)
     
-    # Убедимся, что маска бинарная
     mask_binary = mask > 0
 
-    # Находим границы маски
     eroded_mask = binary_erosion(mask_binary)
-    edges = mask_binary ^ eroded_mask  # XOR для получения границ
+    edges = mask_binary ^ eroded_mask  # XOR
 
-    # Создаем новое изображение с альфа-каналом
     height, width = mask.shape
     rgba_image = Image.new("RGBA", (width, height))
     pixels = rgba_image.load()
 
-    # Определите цвет заливки и цвет обводки
-    fill_color = (49, 130, 206, 255)      # Синий цвет с 100% непрозрачностью
-    outline_color = (255, 255, 255, 255)    # Цвет для обводки
+    fill_color = (49, 130, 206, 255)
+    outline_color = (255, 255, 255, 255) 
 
-    # Создайте массив RGBA с прозрачностью
     rgba_array = np.zeros((height, width, 4), dtype=np.uint8)
 
-    # Примените основной цвет к маске
     rgba_array[mask_binary] = fill_color
 
-    # Примените цвет обводки к границам
     rgba_array[edges] = outline_color
 
-    # Создайте изображение из массива
     rgba_image = Image.fromarray(rgba_array, 'RGBA')
 
     # Convert mask image to base64

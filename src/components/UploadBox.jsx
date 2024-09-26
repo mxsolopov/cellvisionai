@@ -13,7 +13,7 @@ import {
 import FileIcon from "../assets/fileicon.svg"
 import Check from "../assets/check.svg"
 
-const UploadBox = ({ imageData, setImageData, handleSubmit, isUploading, isUploaded }) => {
+const UploadBox = ({ imageData, setImageData, handleSubmit, isUploaded }) => {
   const { colorMode, toggleColorMode } = useColorMode()
   const [isDragging, setIsDragging] = React.useState(false)
 
@@ -169,7 +169,6 @@ UploadBox.propTypes = {
   ).isRequired,
   setImageData: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  isUploading: PropTypes.bool.isRequired,
   isUploaded: PropTypes.bool.isRequired,
 }
 

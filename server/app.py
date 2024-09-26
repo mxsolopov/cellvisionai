@@ -12,6 +12,7 @@ import time
 import base64
 from io import BytesIO
 from PIL import Image
+from scipy.ndimage import binary_erosion
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications import Xception, VGG16
@@ -237,17 +238,34 @@ def upload_cv():
 
     # Predict mask
     mask = predict_mask_with_threshold(model, file_path, threshold)
+    
+    # Убедимся, что маска бинарная
+    mask_binary = mask > 0
+
+    # Находим границы маски
+    eroded_mask = binary_erosion(mask_binary)
+    edges = mask_binary ^ eroded_mask  # XOR для получения границ
 
     # Создаем новое изображение с альфа-каналом
     height, width = mask.shape
     rgba_image = Image.new("RGBA", (width, height))
+    pixels = rgba_image.load()
 
-    for y in range(height):
-        for x in range(width):
-            if mask[y, x] > 0:  # Если пиксель белый
-                rgba_image.putpixel((x, y), (49, 130, 206, 255))  # Синий цвет с 100% непрозрачностью
-            else:  # Если пиксель черный
-                rgba_image.putpixel((x, y), (0, 0, 0, 0))  # Прозрачный
+    # Определите цвет заливки и цвет обводки
+    fill_color = (49, 130, 206, 255)      # Синий цвет с 100% непрозрачностью
+    outline_color = (255, 255, 255, 255)    # Цвет для обводки
+
+    # Создайте массив RGBA с прозрачностью
+    rgba_array = np.zeros((height, width, 4), dtype=np.uint8)
+
+    # Примените основной цвет к маске
+    rgba_array[mask_binary] = fill_color
+
+    # Примените цвет обводки к границам
+    rgba_array[edges] = outline_color
+
+    # Создайте изображение из массива
+    rgba_image = Image.fromarray(rgba_array, 'RGBA')
 
     # Convert mask image to base64
     buffered = BytesIO()

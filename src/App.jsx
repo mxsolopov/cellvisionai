@@ -20,8 +20,8 @@ const App = () => {
   const [currentConfluency, setCurrentConfluency] = React.useState("0.00")
   const [totalConfluency, setTotalConfluency] = React.useState("0.00")
 
-  const URL = "http://localhost:5000/"
-  // const URL = "https://solopov.pro/"
+  // const URL = "http://localhost:5000/"
+  const URL = "https://solopov.pro/"
 
   // Utility function to calculate confluency
   const calculateConfluency = (maskBase64) => {
@@ -36,23 +36,26 @@ const App = () => {
         ctx.drawImage(img, 0, 0)
         const data = ctx.getImageData(0, 0, img.width, img.height).data
 
-        const bluePixelCount = Array.from(data).filter(
+        const cellPixelCount = Array.from(data).filter(
           (_, i) =>
             i % 4 === 0 &&
-            data[i] === 49 &&
+            (data[i] === 49 &&
             data[i + 1] === 130 &&
-            data[i + 2] === 206
+            data[i + 2] === 206) ||
+            (data[i] === 255 &&
+            data[i + 1] === 255 &&
+            data[i + 2] === 255)
         ).length
 
         const totalPixels = img.width * img.height
-        resolve(((bluePixelCount / totalPixels) * 100).toFixed(2))
+        resolve(((cellPixelCount / totalPixels) * 100).toFixed(2))
       }
     })
   }
 
   // Function to calculate total confluency
   const calculateTotalConfluency = async () => {
-    let totalBluePixelCount = 0
+    let totalCellPixelCount = 0
     let totalPixelsCount = 0
 
     await Promise.all(
@@ -69,15 +72,18 @@ const App = () => {
             ctx.drawImage(img, 0, 0)
             const data = ctx.getImageData(0, 0, img.width, img.height).data
 
-            const bluePixelCount = Array.from(data).filter(
+            const cellPixelCount = Array.from(data).filter(
               (_, i) =>
                 i % 4 === 0 &&
-                data[i] === 49 &&
+                (data[i] === 49 &&
                 data[i + 1] === 130 &&
-                data[i + 2] === 206
+                data[i + 2] === 206) ||
+                (data[i] === 255 &&
+                data[i + 1] === 255 &&
+                data[i + 2] === 255)
             ).length
 
-            totalBluePixelCount += bluePixelCount
+            totalCellPixelCount += cellPixelCount
             totalPixelsCount += img.width * img.height
 
             resolve()
@@ -87,7 +93,7 @@ const App = () => {
     )
 
     // Return total confluency as a number
-    return ((totalBluePixelCount / totalPixelsCount) * 100).toFixed(2)
+    return ((totalCellPixelCount / totalPixelsCount) * 100).toFixed(2)
   }
 
   // Effect to calculate confluency when imageData or currentIndex changes
@@ -108,7 +114,7 @@ const App = () => {
     setIsUploading(false)
     setIsUploaded(false)
     setMaskViewMode("1")
-    setOpacity(0.2)
+    setOpacity(0.5)
     setThreshold(0.5)
     setSelectedModel("unet")
     setExecutionTime(0)

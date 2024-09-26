@@ -1,6 +1,6 @@
-# Application for Segmentation of MSC Culture Photos
+# Application for Segmentation of MSCs Culture Microphotographs
 
-The web application is designed to automate the process of semantic segmentation of cell culture images using popular neural network models. It allows researchers and professionals in biology and medicine to efficiently analyze microscopic photographs and determine, for example, the confluency level of a cell culture.
+The web application is designed to automate the process of semantic segmentation of cell culture microphotographs using popular neural network models. It allows researchers in biology and medicine to efficiently analyze microphotographs and determine, for example, the confluency level of a cell culture.
 
 ## Contents
 
@@ -11,11 +11,11 @@ The web application is designed to automate the process of semantic segmentation
 
 ## Introduction
 
-This repository contains the source code for an application for semantic segmentation of MSC cell cultures using neural network models. The models were trained using a dataset of microphotographs from 5 different human MSC populations. The photographs were taken using a Nikon Eclipse Ti 2 microscope (10x objective). 320 images of 1000x1000 pixels were annotated by experts to create a reference set of cell masks. The VGG Image Annotator service was used for annotation. The application features three architectures for image segmentation: DeepLab, SegNet, and U-Net. All models were initialized with weights obtained after training on the ImageNet dataset and then fine-tuned on the MSC microphotograph dataset. 256 images were used for the training set, and 64 for validation. Training was conducted over 85 epochs, using binary cross-entropy as the loss function and the Adam optimizer.
+This repository contains the source code for an application for semantic segmentation of MSCs microphotographs using neural network models. The models were trained using a dataset of microphotographs from 5 different human MSC populations. The photographs were taken using a Nikon Eclipse Ti 2 microscope (10x objective). 320 images of 1000x1000 pixels were annotated by experts to create a reference set of cell masks. The VGG Image Annotator service was used for annotation. The application features three architectures for image segmentation: DeepLab, SegNet, and U-Net. All models were initialized with weights obtained after training on the ImageNet dataset and then fine-tuned on the MSCs microphotograph dataset. 256 images were used for the training set, and 64 for test set. Training was conducted over 85 epochs, using binary cross-entropy as the loss function and the Adam optimizer.
 
 ## Features
 
-- **Image Upload**: Users can upload batches of cell culture photographs in various formats.
+- **Image Upload**: Users can upload batches of cell culture microphotographs in various formats.
 - **Automatic Segmentation**: The application uses pre-trained neural network models for accurate cell segmentation, significantly speeding up the analysis process.
 - **Interactive Interface**: A user-friendly and intuitive interface allows users to adjust segmentation parameters and visualize results in real-time.
 - **Confluency Calculation**: Displays confluency data for the viewed image and for the entire batch of images.

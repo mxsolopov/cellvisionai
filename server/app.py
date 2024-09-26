@@ -237,11 +237,21 @@ def upload_cv():
 
     # Predict mask
     mask = predict_mask_with_threshold(model, file_path, threshold)
-    mask_image = Image.fromarray((mask * 255).astype(np.uint8))
+
+    # Создаем новое изображение с альфа-каналом
+    height, width = mask.shape
+    rgba_image = Image.new("RGBA", (width, height))
+
+    for y in range(height):
+        for x in range(width):
+            if mask[y, x] > 0:  # Если пиксель белый
+                rgba_image.putpixel((x, y), (49, 130, 206, 255))  # Синий цвет с 100% непрозрачностью
+            else:  # Если пиксель черный
+                rgba_image.putpixel((x, y), (0, 0, 0, 0))  # Прозрачный
 
     # Convert mask image to base64
     buffered = BytesIO()
-    mask_image.save(buffered, format="PNG")
+    rgba_image.save(buffered, format="PNG")
     mask_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
 
     return jsonify({'mask_base64': mask_base64})

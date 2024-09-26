@@ -22,26 +22,8 @@ const InfoPanel = ({
   imageData,
   executionTime,
   currentConfluency,
-  calculateConfluency,
+  totalConfluency
 }) => {
-  const calculateTotalConfluency = async () => {
-    const confluencies = await Promise.all(
-      imageData.map((item) => calculateConfluency(item.mask))
-    )
-    const totalConfluency = (
-      confluencies.reduce((acc, val) => acc + parseFloat(val), 0) /
-      confluencies.length
-    ).toFixed(2)
-    return totalConfluency
-  }
-
-  const [totalConfluency, setTotalConfluency] = React.useState(0)
-
-  React.useEffect(() => {
-    if (imageData.length > 0) {
-      calculateTotalConfluency().then(setTotalConfluency)
-    }
-  }, [imageData])
 
   const downloadMasksAsZip = async () => {
     const zip = new JSZip()
@@ -125,7 +107,10 @@ const InfoPanel = ({
       if (imageData[index].mask) {
         const jsonContent = await convertMaskToJson(imageData[index].mask)
 
-        const originalName = imageData[index].file.name.split(".").slice(0, -1).join(".")
+        const originalName = imageData[index].file.name
+          .split(".")
+          .slice(0, -1)
+          .join(".")
         const jsonFileName = `${originalName}_mask.json`
 
         zip.file(jsonFileName, jsonContent)
@@ -208,9 +193,9 @@ InfoPanel.propTypes = {
       mask: PropTypes.string,
     })
   ).isRequired,
-  executionTime: PropTypes.number.isRequired,
+  executionTime: PropTypes.string.isRequired,
   currentConfluency: PropTypes.string.isRequired,
-  calculateConfluency: PropTypes.func.isRequired,
+  totalConfluency: PropTypes.string.isRequired,
 }
 
 export default InfoPanel

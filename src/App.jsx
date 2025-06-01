@@ -20,8 +20,7 @@ const App = () => {
   const [currentConfluency, setCurrentConfluency] = React.useState("0.00")
   const [totalConfluency, setTotalConfluency] = React.useState("0.00")
 
-  // const URL = "http://localhost:5000/"
-  const URL = "https://healtify.ru/"
+  const URL = "http://localhost:5000/"
 
   // Utility function to calculate confluency
   const calculateConfluency = (maskBase64) => {

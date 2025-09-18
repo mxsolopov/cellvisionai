@@ -34,6 +34,7 @@ app = Flask(__name__)
 CORS(app)
 
 UPLOAD_FOLDER_CV = 'uploads_cv'
+WEIGHTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'weights')
 
 # Creating a folder for uploading images
 os.makedirs(UPLOAD_FOLDER_CV, exist_ok=True)
@@ -184,13 +185,13 @@ def segnet_model(input_size=(IMAGE_SIZE, IMAGE_SIZE, 3)):
     return model
 
 unet = unet_model()
-unet.load_weights('weights/unet_weights.h5')
+unet.load_weights(os.path.join(WEIGHTS_DIR, 'unet_weights.h5'))
 
 deeplab = deep_lab_model()
-deeplab.load_weights('weights/deep_lab_weights.h5')
+deeplab.load_weights(os.path.join(WEIGHTS_DIR, 'deep_lab_weights.h5'))
 
 segnet = segnet_model()
-segnet.load_weights('weights/segnet_weights.h5')
+segnet.load_weights(os.path.join(WEIGHTS_DIR, 'segnet_weights.h5'))
 
 def preprocess_image(image_path, target_size=(256, 256)):
     image = keras.preprocessing.image.load_img(image_path, target_size=target_size)
